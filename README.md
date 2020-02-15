@@ -1,4 +1,4 @@
-# Pokemon-Emerald-Battle-Engine-Upgrade
+# gravityeffect
 
 Installation instructions:
 
