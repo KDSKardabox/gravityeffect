@@ -115,6 +115,11 @@ typedef signed long s32;
 #define B_ANIM_HAIL_CONTINUES           0xD
 #define TEXT_BUFF_ARRAY_COUNT   16
 #define PARTY_SIZE          6
+// Cmd_damagecalc
+#define GET_BATTLER_SIDE(battler)         (GetBattlerPosition(battler) & BIT_SIDE)
+#define BIT_SIDE        1
+#define STATUS3_CHARGED_UP              0x200
+#define TYPE_ELECTRIC         13
 
 struct BattleEnigmaBerry
 {
@@ -561,6 +566,8 @@ extern const u8 BattleScript_DamagingWeatherContinues[];
 extern const u8 BattleScript_SunlightContinues[];
 extern const u8 BattleScript_SunlightFaded[];
 extern const u8 BattleScript_GravityCounterFinish[];
+extern u16 gDynamicBasePower;
+extern u8 gCritMultiplier;
 
 void Cmd_typecalc(void)
 {
