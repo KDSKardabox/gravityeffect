@@ -524,6 +524,7 @@ void BattleScriptExecute(const u8* BS_ptr);
 void BattleTurnPassed(void);
 void BattleStartClearSetData(void);
 void BattleIntroGetMonsData(void);
+u8 GetBattlerPosition(u8 battler);
 s32 CalculateBaseDamage(struct BattlePokemon *attacker, struct BattlePokemon *defender, u32 move, u16 sideStatus, u16 powerOverride, u8 typeOverride, u8 bankAtk, u8 bankDef);
 extern struct BattleStruct *gBattleStruct;
 extern const u8 gTypeEffectiveness[336];
