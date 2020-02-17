@@ -31,6 +31,8 @@ gBattleTextBuff1 = 0x02022F58;
 gWishFutureKnock = 0x020243D0;
 gBattleScripting = 0x02024474;
 gBattleMainFunc = 0x03005D04;
+gDynamicBasePower = 0x02024400;
+gCritMultiplier = 0x02024211;
 
 /*Gravity*/
 __aeabi_uidiv = 0x082E7B68|1;
@@ -62,3 +64,4 @@ BattleScript_GravityCounterFinish = 0x09B11BD0;
 BattleTurnPassed = 0x0803B9BC|1;
 BattleStartClearSetData = 0x08039F40|1;
 BattleIntroGetMonsData = 0x0803ABC0|1;
+CalculateBaseDamage = 0x0806957C|1;
