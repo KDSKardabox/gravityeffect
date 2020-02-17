@@ -1112,6 +1112,8 @@ void Cmd_damagecalc(void)
                                             gBattleStruct->dynamicMoveType, gBattlerAttacker, gBattlerTarget);
     gBattleMoveDamage = gBattleMoveDamage * gCritMultiplier * gBattleScripting.dmgMultiplier;
 
+    if(ABILITY_ON_FIELD(ABILITY_FAIRY_AURA) && gBattleMoves[gCurrentMove].type == TYPE_FAIRY)
+        gBattleMoveDamage = (gBattleMoveDamage * 4)/3;   
     if (gStatuses3[gBattlerAttacker] & STATUS3_CHARGED_UP && gBattleMoves[gCurrentMove].type == TYPE_ELECTRIC)
         gBattleMoveDamage *= 2;
     if (gProtectStructs[gBattlerAttacker].helpingHand)
