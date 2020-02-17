@@ -930,6 +930,7 @@ u8 DoFieldEndTurnEffects(void)
             if (!effect)
             {
                 gBattleStruct->turnCountersTracker++;
+                gBattleStruct->turnSideTracker = 0; 
             }
             break;
         case ENDTURN_TAILWIND:
