@@ -31,6 +31,8 @@ gBattleTextBuff1 = 0x02022F58;
 gWishFutureKnock = 0x020243D0;
 gBattleScripting = 0x02024474;
 gBattleMainFunc = 0x03005D04;
+gTailwindCounter = 0x0203D710;
+gLuckychantCounter = 0x0203D712;
 gDynamicBasePower = 0x02024400;
 gCritMultiplier = 0x02024211;
 
