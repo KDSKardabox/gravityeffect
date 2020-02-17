@@ -568,6 +568,12 @@ extern const u8 BattleScript_DamagingWeatherContinues[];
 extern const u8 BattleScript_SunlightContinues[];
 extern const u8 BattleScript_SunlightFaded[];
 extern const u8 BattleScript_GravityCounterFinish[];
+extern const u8 BattleScript_TailwindUserEnds[];
+extern const u8 BattleScript_TailwindAIEnds[];
+extern const u8 BattleScript_LuckchantUserEnds[];
+extern const u8 BattleScript_LuckychantAIEnds[];
+extern u8 gTailwindCounter[2];
+extern u8 gLuckychantCounter[2];
 extern u16 gDynamicBasePower;
 extern u8 gCritMultiplier;
 
@@ -756,11 +762,13 @@ enum
     ENDTURN_MIST,
     ENDTURN_SAFEGUARD,
     ENDTURN_WISH,
+    ENDTURN_TAILWIND,
     ENDTURN_RAIN,
     ENDTURN_SANDSTORM,
     ENDTURN_SUN,
     ENDTURN_HAIL,
     ENDTURN_GRAVITY,
+    ENDTURN_LUCKYCHANT,
     ENDTURN_FIELD_COUNT,
 };
 
@@ -924,6 +932,33 @@ u8 DoFieldEndTurnEffects(void)
                 gBattleStruct->turnCountersTracker++;
             }
             break;
+        case END_TURN_TAILWIND:
+            while (gBattleStruct->turnSideTracker < 2)
+            {
+                side = gBattleStruct->turnSideTracker;
+                gActiveBattler = gBattlerAttacker = side;
+                if(gTailwindCounter[side] != 0 && --gTailwindCounter[side] == 0) {
+           if(side == 0)
+               {
+                        BattleScriptExecute(BattleScript_TailwindUserEnds); 
+           }
+               else
+          {
+            BattleScriptExecute(BattleScript_TailwindAIEnds); 
+                   
+                  }
+            effect++;
+                }
+                gBattleStruct->turnSideTracker++;
+                if (effect)
+                    break;
+            }
+            if (!effect)
+            {
+                gBattleStruct->turnCountersTracker++;
+                gBattleStruct->turnSideTracker = 0;
+            }
+            break;                        
         case ENDTURN_RAIN:
             if (gBattleWeather & WEATHER_RAIN_ANY)
             {
@@ -1024,7 +1059,34 @@ u8 DoFieldEndTurnEffects(void)
                 }
               }
             gBattleStruct->turnCountersTracker++;
-            break;        
+            break;    
+        case END_TURN_LUCKYCHANT:
+            while (gBattleStruct->turnSideTracker < 2)
+            {
+                side = gBattleStruct->turnSideTracker;
+                gActiveBattler = gBattlerAttacker = side;
+                if(gLuckychantCounter[side] != 0 && --gLuckychantCounter[side] == 0) {
+           if(side == 0)
+               {
+                        BattleScriptExecute(BattleScript_LuckchantUserEnds); 
+           }
+               else
+          {
+            BattleScriptExecute(BattleScript_LuckychantAIEnds); 
+                   
+                  }
+            effect++;
+                }
+                gBattleStruct->turnSideTracker++;
+                if (effect)
+                    break;
+            }
+            if (!effect)
+            {
+                gBattleStruct->turnCountersTracker++;
+                gBattleStruct->turnSideTracker = 0;
+            }
+            break;                
         case ENDTURN_FIELD_COUNT:
             effect++;
             break;
