@@ -958,7 +958,7 @@ u8 DoFieldEndTurnEffects(void)
                 gBattleStruct->turnCountersTracker++;
                 gBattleStruct->turnSideTracker = 0;
             }
-            break;                        
+            break;                 
         case ENDTURN_RAIN:
             if (gBattleWeather & WEATHER_RAIN_ANY)
             {
