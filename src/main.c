@@ -1031,3 +1031,19 @@ void BeginBattleIntro(void)
     gGravityCounter = 0;
     gBattleMainFunc = BattleIntroGetMonsData;
 }
+
+void Cmd_damagecalc(void)
+{
+    u16 sideStatus = gSideStatuses[GET_BATTLER_SIDE(gBattlerTarget)];
+    gBattleMoveDamage = CalculateBaseDamage(&gBattleMons[gBattlerAttacker], &gBattleMons[gBattlerTarget], gCurrentMove,
+                                            sideStatus, gDynamicBasePower,
+                                            gBattleStruct->dynamicMoveType, gBattlerAttacker, gBattlerTarget);
+    gBattleMoveDamage = gBattleMoveDamage * gCritMultiplier * gBattleScripting.dmgMultiplier;
+
+    if (gStatuses3[gBattlerAttacker] & STATUS3_CHARGED_UP && gBattleMoves[gCurrentMove].type == TYPE_ELECTRIC)
+        gBattleMoveDamage *= 2;
+    if (gProtectStructs[gBattlerAttacker].helpingHand)
+        gBattleMoveDamage = gBattleMoveDamage * 15 / 10;
+
+    gBattlescriptCurrInstr++;
+}
