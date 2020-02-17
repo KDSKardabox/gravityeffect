@@ -932,7 +932,7 @@ u8 DoFieldEndTurnEffects(void)
                 gBattleStruct->turnCountersTracker++;
             }
             break;
-        case END_TURN_TAILWIND:
+        case ENDTURN_TAILWIND:
             while (gBattleStruct->turnSideTracker < 2)
             {
                 side = gBattleStruct->turnSideTracker;
@@ -1060,7 +1060,7 @@ u8 DoFieldEndTurnEffects(void)
               }
             gBattleStruct->turnCountersTracker++;
             break;    
-        case END_TURN_LUCKYCHANT:
+        case ENDTURN_LUCKYCHANT:
             while (gBattleStruct->turnSideTracker < 2)
             {
                 side = gBattleStruct->turnSideTracker;
