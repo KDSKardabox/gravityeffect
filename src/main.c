@@ -120,6 +120,8 @@ typedef signed long s32;
 #define BIT_SIDE        1
 #define STATUS3_CHARGED_UP              0x200
 #define TYPE_ELECTRIC         13
+#define ABILITY_FAIRY_AURA 0x7F
+#define TYPE_FAIRY         0x17
 
 struct BattleEnigmaBerry
 {
