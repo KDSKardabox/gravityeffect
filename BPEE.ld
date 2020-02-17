@@ -64,4 +64,5 @@ BattleScript_GravityCounterFinish = 0x09B11BD0;
 BattleTurnPassed = 0x0803B9BC|1;
 BattleStartClearSetData = 0x08039F40|1;
 BattleIntroGetMonsData = 0x0803ABC0|1;
+GetBattlerPosition = 0x080A6A44|1;
 CalculateBaseDamage = 0x0806957C|1;
