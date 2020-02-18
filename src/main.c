@@ -632,6 +632,7 @@ extern u8 gTailwindCounter[2];
 extern u8 gLuckychantCounter[2];
 extern u16 gDynamicBasePower;
 extern u8 gCritMultiplier;
+extern const u8 BattleScript_SwitchInAbilityMessage[];
 extern const u8 *gCustomBattleString;
 extern const u8 gFairyAuraMessage[];
 extern u32 gHitMarker;
