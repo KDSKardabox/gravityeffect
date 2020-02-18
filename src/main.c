@@ -1,3 +1,4 @@
+
 typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned long u32;
@@ -55,6 +56,7 @@ typedef signed long s32;
 #define STATUS3_ON_AIR                  0x40
 #define STATUS3_UNDERGROUND             0x80
 #define STATUS3_UNDERWATER              0x40000
+#define STATUS3_SWITCHIN				0x400000
 #define T1_READ_PTR(ptr) (u8*) T1_READ_32(ptr)
 #define T1_READ_32(ptr) ((ptr)[0] | ((ptr)[1] << 8) | ((ptr)[2] << 16) | ((ptr)[3] << 24))
 #define T2_READ_16(ptr) ((ptr)[0] + ((ptr)[1] << 8))
@@ -131,6 +133,7 @@ struct BattleEnigmaBerry
     /*0x1A*/ u8 holdEffectParam;
              u8 padding;
 };
+
 
 struct BattleTv_Side
 {
@@ -578,6 +581,8 @@ extern u8 gTailwindCounter[2];
 extern u8 gLuckychantCounter[2];
 extern u16 gDynamicBasePower;
 extern u8 gCritMultiplier;
+extern const u8 *gCustomBattleString;
+extern const u8 gFairyAuraMessage[];
 
 void Cmd_typecalc(void)
 {
@@ -1124,6 +1129,25 @@ void Cmd_damagecalc(void)
     gBattlescriptCurrInstr++;
 }
 
+static u8 SwitchInAbilityMessageHandler(u8 bank) {
+	u8 effect = 0;
+    gStatuses3[bank] |= STATUS3_SWITCHIN;
+	if(!(gStatuses3[bank] & STATUS3_SWITCHIN))
+	{
+		switch(gBattleMons[bank].abilityId) {
+			case ABILITY_FAIRY_AURA:
+				//use setword offset for gCustomBattleString
+				gCustomBattleString = gFairyAuraMessage;
+				gActiveBattler = gBattleScripting.battler = gBattlerAttacker = bank;
+				effect++;
+				BattleScriptPushCursorAndCallback(BattleScript_SwitchInAbilityMessage)
+				break;
+				
+		}
+	}
+	return effect;
+}
+
 void Cmd_switchineffects(void)
 {
     s32 i;
@@ -1171,6 +1195,7 @@ void Cmd_switchineffects(void)
         gDisableStructs[gActiveBattler].truantSwitchInHack = 0;
  
         if (!AbilityBattleEffects(ABILITYEFFECT_ON_SWITCHIN, gActiveBattler, 0, 0, 0)
+			&& !SwitchInAbilityMessageHandler(gActiveBattler)
             && !ItemBattleEffects(ITEMEFFECT_ON_SWITCH_IN, gActiveBattler, FALSE))
         {
             gSideStatuses[GetBattlerSide(gActiveBattler)] &= ~(SIDE_STATUS_SPIKES_DAMAGED);
@@ -1239,6 +1264,8 @@ void TryDoEventsBeforeFirstTurn(void)
     {
         if (AbilityBattleEffects(ABILITYEFFECT_ON_SWITCHIN, gBattlerByTurnOrder[gBattleStruct->switchInAbilitiesCounter], 0, 0, 0) != 0)
             effect++;
+		else if(SwitchInAbilityMessageHandler(gBattlerByTurnOrder[gBattleStruct->switchInAbilitiesCounter]) != 0)
+			effect++;
  
         gBattleStruct->switchInAbilitiesCounter++;
  
