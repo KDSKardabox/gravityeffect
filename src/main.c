@@ -574,6 +574,14 @@ void sub_803FA70(u8 battlerId);
 u8 GetBattlerSide(u8 battler);
 void BattleScriptPushCursor(void);
 u8 ItemBattleEffects(u8 caseID, u8 battlerId, bool8 moveTurn);
+u8 switchInAbilitiesCounter;
+void SwapTurnOrder(u8 id1, u8 id2);
+void TurnValuesCleanUp(bool8 var0);
+void SpecialStatusesClear(void);
+void BattlePutTextOnWindow(const u8* text, u8 windowId);
+void HandleTurnActionSelectionState(void);
+void ResetSentPokesToOpponentValue(void);
+void StopCryAndClearCrySongs(void);
 extern struct BattleStruct *gBattleStruct;
 extern const u8 gTypeEffectiveness[336];
 extern u16 gCurrentMove;
@@ -632,7 +640,13 @@ extern const u8 BattleScript_SpikesOnTarget[];
 extern const u8 BattleScript_SpikesOnAttacker[];
 extern const u8 BattleScript_SpikesOnFaintedBattler[];
 extern u8 gActionsByTurnOrder[MAX_BATTLERS_COUNT];
-
+extern u8 gBattlerFainted;
+extern u32 gBattleControllerExecFlags;
+extern u8 gChosenActionByBattler[MAX_BATTLERS_COUNT];
+extern u16 gChosenMoveByBattler[MAX_BATTLERS_COUNT];
+extern const u8 gText_EmptyString3[];
+extern u16 gRandomTurnNumber;
+extern const u8 BattleScript_ArenaTurnBeginning[];
 
 void Cmd_typecalc(void)
 {
