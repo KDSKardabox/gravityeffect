@@ -1205,3 +1205,95 @@ static void Cmd_switchineffects(void)
         }
     }
 }
+
+
+static void TryDoEventsBeforeFirstTurn(void)
+{
+    s32 i;
+    s32 j;
+    u8 effect = 0;
+ 
+    if (gBattleControllerExecFlags)
+        return;
+ 
+    if (gBattleStruct->switchInAbilitiesCounter == 0)
+    {
+        for (i = 0; i < gBattlersCount; i++)
+            gBattlerByTurnOrder[i] = i;
+        for (i = 0; i < gBattlersCount - 1; i++)
+        {
+            for (j = i + 1; j < gBattlersCount; j++)
+            {
+                if (GetWhoStrikesFirst(gBattlerByTurnOrder[i], gBattlerByTurnOrder[j], TRUE) != 0)
+                    SwapTurnOrder(i, j);
+            }
+        }
+    }
+    if (!gBattleStruct->overworldWeatherDone
+        && AbilityBattleEffects(0, 0, 0, ABILITYEFFECT_SWITCH_IN_WEATHER, 0) != 0)
+    {
+        gBattleStruct->overworldWeatherDone = TRUE;
+        return;
+    }
+    // Check all switch in abilities happening from the fastest mon to slowest.
+    while (gBattleStruct->switchInAbilitiesCounter < gBattlersCount)
+    {
+        if (AbilityBattleEffects(ABILITYEFFECT_ON_SWITCHIN, gBattlerByTurnOrder[gBattleStruct->switchInAbilitiesCounter], 0, 0, 0) != 0)
+            effect++;
+ 
+        gBattleStruct->switchInAbilitiesCounter++;
+ 
+        if (effect)
+            return;
+    }
+    if (AbilityBattleEffects(ABILITYEFFECT_INTIMIDATE1, 0, 0, 0, 0) != 0)
+        return;
+    if (AbilityBattleEffects(ABILITYEFFECT_TRACE, 0, 0, 0, 0) != 0)
+        return;
+    // Check all switch in items having effect from the fastest mon to slowest.
+    while (gBattleStruct->switchInItemsCounter < gBattlersCount)
+    {
+        if (ItemBattleEffects(ITEMEFFECT_ON_SWITCH_IN, gBattlerByTurnOrder[gBattleStruct->switchInItemsCounter], FALSE))
+            effect++;
+ 
+        gBattleStruct->switchInItemsCounter++;
+ 
+        if (effect)
+            return;
+    }
+    for (i = 0; i < MAX_BATTLERS_COUNT; i++)
+    {
+        *(gBattleStruct->monToSwitchIntoId + i) = PARTY_SIZE;
+        gChosenActionByBattler[i] = B_ACTION_NONE;
+        gChosenMoveByBattler[i] = MOVE_NONE;
+    }
+    TurnValuesCleanUp(FALSE);
+    SpecialStatusesClear();
+    *(&gBattleStruct->field_91) = gAbsentBattlerFlags;
+    BattlePutTextOnWindow(gText_EmptyString3, 0);
+    gBattleMainFunc = HandleTurnActionSelectionState;
+    ResetSentPokesToOpponentValue();
+ 
+    for (i = 0; i < BATTLE_COMMUNICATION_ENTRIES_COUNT; i++)
+        gBattleCommunication[i] = 0;
+ 
+    for (i = 0; i < gBattlersCount; i++)
+        gBattleMons[i].status2 &= ~(STATUS2_FLINCHED);
+ 
+    *(&gBattleStruct->turnEffectsTracker) = 0;
+    *(&gBattleStruct->turnEffectsBattlerId) = 0;
+    *(&gBattleStruct->wishPerishSongState) = 0;
+    *(&gBattleStruct->wishPerishSongBattlerId) = 0;
+    gBattleScripting.moveendState = 0;
+    gBattleStruct->faintedActionsState = 0;
+    gBattleStruct->turnCountersTracker = 0;
+    gMoveResultFlags = 0;
+ 
+    gRandomTurnNumber = Random();
+ 
+    if (gBattleTypeFlags & BATTLE_TYPE_ARENA)
+    {
+        StopCryAndClearCrySongs();
+        BattleScriptExecute(BattleScript_ArenaTurnBeginning);
+    }
+}
