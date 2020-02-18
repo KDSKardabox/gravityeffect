@@ -123,6 +123,27 @@ typedef signed long s32;
 #define TYPE_ELECTRIC         13
 #define ABILITY_FAIRY_AURA 0x7F
 #define TYPE_FAIRY         0x17
+// Cmd_switchineffects
+#define HITMARKER_FAINTED(battler)      (gBitTable[battler] << 0x1C)
+#define SIDE_STATUS_SPIKES_DAMAGED   (1 << 9)
+#define SIDE_STATUS_SPIKES           (1 << 4)
+#define STATUS2_DESTINY_BOND          0x02000000
+#define HITMARKER_DESTINYBOND           0x00000040
+#define BS_TARGET                   0
+#define BS_ATTACKER                 1
+#define ABILITY_TRUANT 54
+#define ABILITYEFFECT_ON_SWITCHIN                0x0
+#define ITEMEFFECT_ON_SWITCH_IN                 0x0
+#define B_ACTION_CANCEL_PARTNER         12 // when choosing an action
+// TryDoEventsBeforeFirstTurn
+#define ABILITYEFFECT_SWITCH_IN_WEATHER          0xFF
+#define ABILITYEFFECT_INTIMIDATE1                0x9
+#define ABILITYEFFECT_TRACE                      0xB
+#define B_ACTION_NONE                   0xFF
+#define MOVE_NONE 0
+#define BATTLE_COMMUNICATION_ENTRIES_COUNT  0x8
+#define STATUS2_FLINCHED              0x00000008
+#define BATTLE_TYPE_ARENA           0x40000
 
 struct BattleEnigmaBerry
 {
@@ -510,6 +531,23 @@ struct BattleScripting
     u8 specialTrainerBattleType;
 };
 
+struct SpecialStatus
+{
+    u8 statLowered:1;
+    u8 lightningRodRedirected:1;
+    u8 restoredBattlerSprite: 1;
+    u8 intimidatedMon:1;
+    u8 traced:1;
+    u8 ppNotAffectedByPressure:1;
+    u8 flag40:1;
+    u8 focusBanded:1;
+    s32 dmg;
+    s32 physicalDmg;
+    s32 specialDmg;
+    u8 physicalBattlerId;
+    u8 specialBattlerId;
+};
+
 void RecordAbilityBattle(u8 battlerId, u8 abilityId);
 void ModulateDmgByType(u8 multiplier);
 u8 AttacksThisTurn(u8 battlerId, u16 move);
@@ -530,6 +568,12 @@ void BattleStartClearSetData(void);
 void BattleIntroGetMonsData(void);
 u8 GetBattlerPosition(u8 battler);
 s32 CalculateBaseDamage(struct BattlePokemon *attacker, struct BattlePokemon *defender, u32 move, u16 sideStatus, u16 powerOverride, u8 typeOverride, u8 bankAtk, u8 bankDef);
+void BattleScriptPushCursorAndCallback(const u8* BS_ptr);
+u8 GetBattlerForBattleScript(u8 caseId);
+void sub_803FA70(u8 battlerId);
+u8 GetBattlerSide(u8 battler);
+void BattleScriptPushCursor(void);
+u8 ItemBattleEffects(u8 caseID, u8 battlerId, bool8 moveTurn);
 extern struct BattleStruct *gBattleStruct;
 extern const u8 gTypeEffectiveness[336];
 extern u16 gCurrentMove;
@@ -582,6 +626,13 @@ extern u16 gDynamicBasePower;
 extern u8 gCritMultiplier;
 extern const u8 *gCustomBattleString;
 extern const u8 gFairyAuraMessage[];
+extern u32 gHitMarker;
+extern struct SpecialStatus gSpecialStatuses[MAX_BATTLERS_COUNT];
+extern const u8 BattleScript_SpikesOnTarget[];
+extern const u8 BattleScript_SpikesOnAttacker[];
+extern const u8 BattleScript_SpikesOnFaintedBattler[];
+extern u8 gActionsByTurnOrder[MAX_BATTLERS_COUNT];
+
 
 void Cmd_typecalc(void)
 {
