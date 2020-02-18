@@ -1124,7 +1124,7 @@ void Cmd_damagecalc(void)
     gBattlescriptCurrInstr++;
 }
 
-static void Cmd_switchineffects(void)
+void Cmd_switchineffects(void)
 {
     s32 i;
  
@@ -1206,8 +1206,7 @@ static void Cmd_switchineffects(void)
     }
 }
 
-
-static void TryDoEventsBeforeFirstTurn(void)
+void TryDoEventsBeforeFirstTurn(void)
 {
     s32 i;
     s32 j;
