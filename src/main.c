@@ -1130,7 +1130,7 @@ void Cmd_damagecalc(void)
 
 static u8 SwitchInAbilityMessageHandler(u8 bank) {
 	u8 effect = 0;
-    gStatuses3[bank] |= STATUS3_SWITCHIN;
+        gStatuses3[bank] |= STATUS3_SWITCHIN;
 	if(!(gStatuses3[bank] & STATUS3_SWITCHIN))
 	{
 		switch(gBattleMons[bank].abilityId) {
