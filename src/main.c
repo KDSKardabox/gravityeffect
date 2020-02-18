@@ -1123,3 +1123,85 @@ void Cmd_damagecalc(void)
 
     gBattlescriptCurrInstr++;
 }
+
+static void Cmd_switchineffects(void)
+{
+    s32 i;
+ 
+    gActiveBattler = GetBattlerForBattleScript(gBattlescriptCurrInstr[1]);
+    sub_803FA70(gActiveBattler);
+ 
+    gHitMarker &= ~(HITMARKER_FAINTED(gActiveBattler));
+    gSpecialStatuses[gActiveBattler].flag40 = 0;
+ 
+    if (!(gSideStatuses[GetBattlerSide(gActiveBattler)] & SIDE_STATUS_SPIKES_DAMAGED)
+        && (gSideStatuses[GetBattlerSide(gActiveBattler)] & SIDE_STATUS_SPIKES)
+        && !IS_BATTLER_OF_TYPE(gActiveBattler, TYPE_FLYING)
+        && gBattleMons[gActiveBattler].ability != ABILITY_LEVITATE)
+    {
+        u8 spikesDmg;
+ 
+        gSideStatuses[GetBattlerSide(gActiveBattler)] |= SIDE_STATUS_SPIKES_DAMAGED;
+ 
+        gBattleMons[gActiveBattler].status2 &= ~(STATUS2_DESTINY_BOND);
+        gHitMarker &= ~(HITMARKER_DESTINYBOND);
+ 
+        spikesDmg = (5 - gSideTimers[GetBattlerSide(gActiveBattler)].spikesAmount) * 2;
+        gBattleMoveDamage = gBattleMons[gActiveBattler].maxHP / (spikesDmg);
+        if (gBattleMoveDamage == 0)
+            gBattleMoveDamage = 1;
+ 
+        gBattleScripting.battler = gActiveBattler;
+        BattleScriptPushCursor();
+ 
+        if (gBattlescriptCurrInstr[1] == BS_TARGET)
+            gBattlescriptCurrInstr = BattleScript_SpikesOnTarget;
+        else if (gBattlescriptCurrInstr[1] == BS_ATTACKER)
+            gBattlescriptCurrInstr = BattleScript_SpikesOnAttacker;
+        else
+            gBattlescriptCurrInstr = BattleScript_SpikesOnFaintedBattler;
+    }
+    else
+    {
+        // There is a hack here to ensure the truant counter will be 0 when the battler's next turn starts.
+        // The truant counter is not updated in the case where a mon switches in after a lost judgement in the battle arena.
+        if (gBattleMons[gActiveBattler].ability == ABILITY_TRUANT && !gDisableStructs[gActiveBattler].truantSwitchInHack)
+            gDisableStructs[gActiveBattler].truantCounter = 1;
+ 
+        gDisableStructs[gActiveBattler].truantSwitchInHack = 0;
+ 
+        if (!AbilityBattleEffects(ABILITYEFFECT_ON_SWITCHIN, gActiveBattler, 0, 0, 0)
+            && !ItemBattleEffects(ITEMEFFECT_ON_SWITCH_IN, gActiveBattler, FALSE))
+        {
+            gSideStatuses[GetBattlerSide(gActiveBattler)] &= ~(SIDE_STATUS_SPIKES_DAMAGED);
+ 
+            for (i = 0; i < gBattlersCount; i++)
+            {
+                if (gBattlerByTurnOrder[i] == gActiveBattler)
+                    gActionsByTurnOrder[i] = B_ACTION_CANCEL_PARTNER;
+            }
+ 
+            for (i = 0; i < gBattlersCount; i++)
+            {
+                u16* hpOnSwitchout = &gBattleStruct->hpOnSwitchout[GetBattlerSide(i)];
+                *hpOnSwitchout = gBattleMons[i].hp;
+            }
+ 
+            if (gBattlescriptCurrInstr[1] == 5)
+            {
+                u32 hitmarkerFaintBits = gHitMarker >> 0x1C;
+ 
+                gBattlerFainted++;
+                while (1)
+                {
+                    if (hitmarkerFaintBits & gBitTable[gBattlerFainted] && !(gAbsentBattlerFlags & gBitTable[gBattlerFainted]))
+                        break;
+                    if (gBattlerFainted >= gBattlersCount)
+                        break;
+                    gBattlerFainted++;
+                }
+            }
+            gBattlescriptCurrInstr += 2;
+        }
+    }
+}
