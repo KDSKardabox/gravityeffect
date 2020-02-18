@@ -35,6 +35,8 @@ gTailwindCounter = 0x0203D710;
 gLuckychantCounter = 0x0203D712;
 gDynamicBasePower = 0x02024400;
 gCritMultiplier = 0x02024211;
+gCustomBattleString = 0x0203D70C;
+gFairyAuraMessage = 0x09AAAAAA;
 
 /*Gravity*/
 __aeabi_uidiv = 0x082E7B68|1;
